@@ -21,8 +21,24 @@ calculate_FIM <- function(sensitivities) {
     FIM
 }
 
+#'
+#' D Optimality Criterium
+#' 
+criterium_D <- function(FIM) {
+    
+    det(FIM)
+    
+}
 
-
+#'
+#' Modified-E Optimality Criterium
+#' 
+criterium_modE <- function(FIM) {
+    
+    eig_vals <- eigen(FIM, only.values=TRUE)
+    abs(max(val_prop$values)/min(val_prop$values))
+    
+}
 
 
 
