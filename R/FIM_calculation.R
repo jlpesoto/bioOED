@@ -2,8 +2,12 @@
 #'
 #' Calculation of Fisher Information Matrix
 #' 
+#' The sensitivities at the different \code{times} are calculated by 
+#' linear interpolation of the results provided in \code{sensitivities}.
+#' 
 #' @param sensitivities data.frame of class \code{sensFun} as returned by
 #' \code{\link{sensitivity_inactivation}}.
+#' @param times Numeric vector of time points where observations will be taken.
 #' 
 #' @return Matrix with the estimation of the Fisher Information Matrix.
 #' 
@@ -12,12 +16,21 @@
 #' 
 #' @export
 #' 
-calculate_FIM <- function(sensitivities) {
+calculate_FIM <- function(sensitivities, times) {
     
-    sensitivities <- select_(sensitivities, quote("-x"), quote("-var")) %>%
-        as.matrix()
+    old_times <- sensitivities$x
     
-    FIM <- t(sensitivities) %*% sensitivities
+    sensitivities <- select_(sensitivities, quote("-x"), quote("-var")) # %>%
+        # as.matrix()
+    
+    interp_sensitivities <- matrix(NA, length(times), ncol(sensitivities))
+    
+    for (i in 1:ncol(sensitivities)) {
+        interp_sensitivities[, i] <- approx(old_times, sensitivities[,i],
+                                            times)$y
+    }
+    
+    FIM <- t(interp_sensitivities) %*% interp_sensitivities
     FIM
 }
 
@@ -26,18 +39,28 @@ calculate_FIM <- function(sensitivities) {
 #' 
 criterium_D <- function(FIM) {
     
-    det(FIM)
+    -det(FIM)
     
 }
 
 #'
 #' Modified-E Optimality Criterium
 #' 
-criterium_modE <- function(FIM) {
+criterium_modE <- function(FIM, eig_tol = 1e-10) {
     
     eig_vals <- eigen(FIM, only.values=TRUE)
-    abs(max(val_prop$values)/min(val_prop$values))
     
+    min_eig <- min(eig_vals$values)
+    
+    if (min_value < eig_tol) {
+        
+        return(1e20)
+        
+    } else {
+        
+        abs(max(eig_vals$values)/min_eig)
+        
+    }
 }
 
 
