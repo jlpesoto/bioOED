@@ -128,7 +128,7 @@ calculate_pars_correlation <- function(inactivation_model, parms,
     
     # sensitivities <- select(sensitivities, -x, -var)
     sensitivities <- select_(sensitivities, quote("-x"), quote("-var"))
-    correlations <- cor(sensitivities)
+    correlations <- cor(sensitivities, use = "complete.obs")
     correlations
 }
 
