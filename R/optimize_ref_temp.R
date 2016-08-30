@@ -106,6 +106,8 @@ refTemp_optim_handler <- function(temp_ref, inactivation_model, parms,
 #' @param temp_profile Data frame describing the environmental conditions.
 #' @param parms_fix Nominal value of the parameters not considered for the
 #'        sensitivity.
+#' @param sensvar The output variable for which the sensitivity will be 
+#' estimated. \code{"logN"} by default.
 #' 
 #' @importFrom dplyr select_
 #' 
@@ -120,13 +122,12 @@ refTemp_optim_handler <- function(temp_ref, inactivation_model, parms,
 #' 
 calculate_pars_correlation <- function(inactivation_model, parms,
                                        temp_profile, parms_fix,
-                                       n_times = 100) {
+                                       n_times = 100, sensvar = "logN") {
     
     sensitivities <- sensitivity_inactivation(inactivation_model, parms,
                                               temp_profile, parms_fix,
-                                              n_times)
+                                              n_times, sensvar = sensvar)
     
-    # sensitivities <- select(sensitivities, -x, -var)
     sensitivities <- select_(sensitivities, quote("-x"), quote("-var"))
     correlations <- cor(sensitivities, use = "complete.obs")
     correlations
