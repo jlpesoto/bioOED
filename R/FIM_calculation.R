@@ -47,7 +47,7 @@ criterium_D <- function(FIM) {
 #' Modified-E Optimality Criterium
 #' 
 criterium_modE <- function(FIM, eig_tol = 1e-10) {
-    
+
     eig_vals <- eigen(FIM, only.values=TRUE)
     
     min_eig <- min(eig_vals$values)
