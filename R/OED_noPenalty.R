@@ -144,7 +144,6 @@ inactivation_OED <- function(inactivation_model, parms, temp_profile, parms_fix,
     } else {
         stop(paste("Unknown optimization algorithm:", optim_algorithm))
     }
-
     
     ## Return results
     
@@ -160,6 +159,7 @@ inactivation_OED <- function(inactivation_model, parms, temp_profile, parms_fix,
     out$optim_algorithm <- optim_algorithm
     out$optim_times <- sort(best_points)
     out$penalty <- FALSE
+    out$time_min <- NA
     
     out
 }
