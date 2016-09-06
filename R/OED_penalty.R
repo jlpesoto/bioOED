@@ -52,7 +52,92 @@ objective_Emod_penalty <- function(times, sensitivities, time_min) {
 #'
 #' Optimum Experimental Design of Microbial Inactivation with Penalty
 #' 
+#' Performs an optimum experimental design for the settings selected including
+#' a function which penalties points too close. The
+#' OED is based on the FIM, estimated using the local sensitivity functions
+#' provided by \code{\link{sensitivity_inactivation}}.
+#' 
+#' @importFrom MEIGOR MEIGO
+#' @importFrom stats optim
+#' @importFrom stats runif
+#' @importFrom bioinactivation predict_inactivation
+#' 
+#' @param inactivation_model Character string defining the inacivation model.
+#' @param parms Named numeric vector defining the model parameters. They must
+#'        be named according to the needs of \code{\link{predict_inactivation}}.
+#' @param temp_profile Data frame defining the temperature profile. It must 
+#'        contain a column named \code{time} and a column named
+#'        \code{temperature}.
+#' @param parms_fix Named numeric vector defining the model parameters to be 
+#'        omitted during the calculation of the local sensitivities.
+#' @param n_points Number of measurements which will be taken during the
+#'        experiment.
+#' @param time_min Numeric value indicating the minimum space between
+#'        measurements.
+#' @param criteria Character defining the criteria for the OED. Either 
+#'        \code{D} (default) or \code{E-mod}.
+#' @param n_times Integer defining th enumber of discrete time points used for
+#'        the interpolation of the local sensitivities.
+#' @param sensvar Character defining the variable to use for the OED. Either
+#'        \code{logN} (default) or \code{N}.
+#' @param optim_algorithm Character defining the type of algorithm to use for
+#'        the optimization. Either \code{global} (default) or \code{local}.
+#' @param opts_global List defining the options for the global optimization
+#'        algorithm (see \code{\link{MEIGO}}). By default, global solver with
+#'        a maximum of 50000 function evaluations and printout on every step.
+#' 
 #' @export
+#' 
+#' @return A list of class \code{OEDinactivation} with the following items:
+#'      \itemize{
+#'          \item optim: Objetc returned by the optimization function.
+#'          \item model: Inactivation model used for the calculations.
+#'          \item parms: Nominal model parameters.
+#'          \item parms_fix: Model parameters not considered for the
+#'                sensitivity calculation.
+#'          \item criteria: Criteria used for the OED.
+#'          \item sensvar: Variable used for the OED.
+#'          \item optim_algorithm: Type of optimization algorithm.
+#'          \item optim_times: Optimum measurement times calculated.
+#'          \item penalty: Logical indicating whether penalty function was
+#'                used.
+#'          }
+#'          
+#' @examples
+#' 
+#' ## Definition of input variables
+#' 
+#' parms_fix <- c(temp_ref = 57.5)
+#' parms <- c(delta_ref = 3.9,
+#'            z = 4.2,
+#'            p = 1,
+#'            N0 = 1e6
+#' )
+#' 
+#' temp_profile <- data.frame(time = c(0, 60), temperature = c(30, 60))
+#' 
+#' n_points <- 5
+#' time_min <- 10
+#' 
+#' ## OED with local optimization
+#' 
+#' local_OED <- inactivation_OED_penalty("Mafart", parms, temp_profile, parms_fix,
+#'                               n_points, criteria = "E-mod", sensvar = "logN",
+#'                               optim_algorithm = "local", time_min = time_min)
+#' 
+#' print(local_OED$optim_times)
+#' 
+#' ## OED with global optimization
+#' 
+#' opts_global <- list(maxeval=1000,  local_solver=0,
+#'                     local_finish="DHC", local_iterprint=1)
+#' 
+#' global_OED <- inactivation_OED_penalty("Mafart", parms, temp_profile, parms_fix,
+#'                                n_points, criteria = "E-mod", opts_global = opts_global,
+#'                                time_min = time_min)
+#' 
+#' print(local_OED$optim_times)
+#' 
 #' 
 inactivation_OED_penalty <- function(inactivation_model, parms, temp_profile, parms_fix,
                                      n_points, time_min, criteria = "D",
