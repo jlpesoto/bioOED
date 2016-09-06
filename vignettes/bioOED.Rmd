@@ -1,5 +1,5 @@
 ---
-title: "bioOED: Optimum Experient Design for Microbial Inactivation"
+title: "bioOED: Optimum Experiment Design for Microbial Inactivation"
 author: "Alberto Garre, Jose Lucas Peñalver Soto, Pablo S. Fernandez, Jose A. Egea"
 date: "`r Sys.Date()`"
 output: rmarkdown::html_vignette
@@ -15,7 +15,7 @@ The mathematical models commonly used for the description of microbial inactivat
 
 The level of uncertainty strongly depends on the experiment performed. For instance, Grijspeerd and Vanrrolleghem (1999) are able to half the estimated standard deviation of the model parameters for microbial growth using an optimum experiment design. This results in a more accurate description of the process.
 
-The R-package __bioOED__ implements functions for the design of optimum experiments, as well as for the calculation of local sensitivities, of microbil inactivation processes. This package can be downloaded form the Comprehensive R Archive Network (CRAN). Once installed, it can be loaded as
+The R-package __bioOED__ implements functions for the design of optimum experiments, as well as for the calculation of local sensitivities, of microbial inactivation processes. This package can be downloaded form the Comprehensive R Archive Network (CRAN). Once installed, it can be loaded as
 
 ```{r}
 library(bioOED)
@@ -26,7 +26,7 @@ __bioOED__ adds the following functions to the namespace:
 * *calculate_pars_correlation()*: calculates the correlation between the sensitivity functions of the model parameters (i.e. the structural identificability) for a set of nominal model parameters.
 * *calculate_FIM()*: calculates the Fisher Information Matrix (FIM).
 * *optimize_refTemp()*: finds the reference temperature which optimizes the structural identificability of the model.
-* *inactivation_OED()*: Designs an optimum experiment based onn a given measurement of the FIM.
+* *inactivation_OED()*: Designs an optimum experiment based on a given measurement of the FIM.
 * *inactivation_OED_penalty()*: Similar to *inactivation_OED()*, although including a penalty term which penalizes measurements closer than a given threshold.
 
 The simulations of microbial inactivation performed by __bioOED__ are based on the functions implemented in the __bioinactivation__ (Garre et al., 2016) package. Hence, only the inactivation models implemented in this package (Bigelow, Peleg, Mafart and Geeraerd) are available in __bioOED__. The calculation of local sensitivities is based on the features implemented in the __FME__ package (Soetaert et al., 2010).
@@ -41,7 +41,7 @@ $$
 
 where $Q_i$ is a matrix of weights. In this document, $Q_i$ will be considered as the identity matrix.
 
-The FIM is relevant for the OED because its inverse is an estimator of the covariance matrix of the error. Hence, an OED can be made by optimizing certain measurements of the FIM. __bioOED__ implements two of this criteria: D and modified E. The D-criterium consists on the maximization of the determinant of the FIM. It is equivalent to the minimization of the volume of the confidence elipsoids. The modified E criterium is based on the minimization of the ratio between the maximum and minimum eigen value of the FIM ($\mathrm{abs} \frac{\lambda_{max}}{\lambda_{min}}$). 
+The FIM is relevant for the OED because its inverse is an estimator of the covariance matrix of the error. Hence, an OED can be made by optimizing certain measurements of the FIM. __bioOED__ implements two of this criteria: D and modified E. The D-criterion consists on the maximization of the determinant of the FIM. It is equivalent to the minimization of the volume of the confidence ellipsoids. The modified E criterion is based on the minimization of the ratio between the maximum and minimum eigenvalue of the FIM ($\mathrm{abs} \frac{\lambda_{max}}{\lambda_{min}}$). 
 
 ## Calculation of local sensitivities
 
@@ -50,7 +50,7 @@ $$
     S_{ij} = \frac{\partial y_i}{\partial \theta_j}
 $$
 
-Typically, this derivative cannot be calculated in close form and one has to use numeric methods. __bioOED__ uses the function *sensFun()* from the __FME__ package for this purpuose, which approximates the local sensitivity functions using finite diffences:
+Typically, this derivative cannot be calculated in close form and one has to use numeric methods. __bioOED__ uses the function *sensFun()* from the __FME__ package for this purpouse, which approximates the local sensitivity functions using finite differences:
 $$
     S_{ij}(t) \approx
     \frac{y \left( \theta + \Delta \theta \right) - y \left( \theta \right)}
@@ -94,7 +94,7 @@ The local sensitivities are estimated at points uniformly distributed between th
 
 The local sensitivities can be scaled using the *varscale* and *parscale* input arguments (see the help page of *sensFun* from the __FME__ package). By default, both arguments are set to 1 (i.e. no scaling).
 
-The argument `sensvar` allows chosing whether the sensitivity of the microbial count ($N$) or its decimal logarithm ($\log N$) with respect to the model parameters will be calculated. By default, the sensitivity of $\log N$ is calculated.
+The argument `sensvar` allows choosing whether the sensitivity of the microbial count ($N$) or its decimal logarithm ($\log N$) with respect to the model parameters will be calculated. By default, the sensitivity of $\log N$ is calculated.
 
 ```{r}
 sensitivity <- sensitivity_inactivation(inactivation_model,
@@ -118,7 +118,7 @@ plot(sensitivity)
 
 Some mathematical models may be ill-defined in the sense that different combination of its model parameters may provide the same output. This is defined as structural identificability of the model. It can be calculated as the correlation between the local sensitivity functions with respect to the different functions.
 
-The __bioOED__ package implements the function *calculate_pars_correlation()* which calculates the correlation betweent the sensitivity function of the model, providing an indicator of its structural identificability. This function has 6 input arguments:
+The __bioOED__ package implements the function *calculate_pars_correlation()* which calculates the correlation between the sensitivity function of the model, providing an indicator of its structural identificability. This function has 6 input arguments:
 
 * *inactivation_model*
 * *parms*
@@ -177,7 +177,7 @@ temp_profile <- data.frame(time = c(0, 60),
                            temperature = c(30, 60))
 ```
 
-The nominal values of the model parameters are provided using the `parms` and `parms_fix` arguments. Both must be compatible with the requirements of the equivalent arguments for the *predict_inactivation()* function from the __bioinactivation__ package. The parameters included in `parms_fix` will not be included in the calculation of the local sensitivities. Therefore, it is recommended to include in this argument those parameters which are known before performing the experiment. The D-value at the reference temperature (or $\delta$) and the z-value must be incuded in `parms` (i.e. cannot be fixed.)
+The nominal values of the model parameters are provided using the `parms` and `parms_fix` arguments. Both must be compatible with the requirements of the equivalent arguments for the *predict_inactivation()* function from the __bioinactivation__ package. The parameters included in `parms_fix` will not be included in the calculation of the local sensitivities. Therefore, it is recommended to include in this argument those parameters which are known before performing the experiment. The D-value at the reference temperature (or $\delta$) and the z-value must be included in `parms` (i.e. cannot be fixed.)
 
 Note that the D-value at the reference temperature (or $\delta$) depend on the reference temperature. Hence, the value provided in `parms` must be the one corresponding to the reference temperature provided in `temp_ref0`. 
 
@@ -251,7 +251,7 @@ The number of measurements to be taken during the experiment are defined by the 
 n_points <- 5
 ```
 
-The criteria for the OED is defined by the argument `criteria`. It must be a characer with the value `"D"` or `"E-mod"`. By default, the D-criterium is set.
+The criteria for the OED is defined by the argument `criteria`. It must be a character with the value `"D"` or `"E-mod"`. By default, the D-criterion is set.
 
 The local sensitivity functions are calculated at a set of discrete uniformly distributed time points. The number of points to use is defined by the argument `n_times` (100 by default).
 
@@ -282,7 +282,7 @@ The function *inactivation_OED* returns a list of class `OEDinactivation`. It co
 * `sensvar`: variable targeted for the OED.
 * `optim_algorithm`: optimization algorithm used.
 * `optim_times`: optimum measurement times calculated.
-* `penalty`: logical indicating wheter a penalty function has been used.
+* `penalty`: logical indicating whether a penalty function has been used.
 * `times_min`: minimum time set for the penalty function.
 
 ```{r}
