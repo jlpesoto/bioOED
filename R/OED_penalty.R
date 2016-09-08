@@ -122,6 +122,8 @@ objective_Emod_penalty <- function(times, sensitivities, time_min) {
 #' 
 #' ## OED with local optimization
 #' 
+#' set.seed(0123182)
+#' 
 #' local_OED <- inactivation_OED_penalty("Mafart", parms, temp_profile, parms_fix,
 #'                               n_points, criteria = "E-mod", sensvar = "logN",
 #'                               optim_algorithm = "local", time_min = time_min)
@@ -170,7 +172,7 @@ inactivation_OED_penalty <- function(inactivation_model, parms, temp_profile, pa
         
     }
     
-    max_time <- max(temp_profile$temp)
+    max_time <- max(temp_profile$time)
     problem <- list(f=tgt_function,
                     x_L=rep(1e-3, n_points),  # 1e-3 to avoid singularity
                     x_U=rep(max_time, n_points)

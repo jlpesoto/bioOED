@@ -67,20 +67,11 @@
 #' 
 #' ## OED with local optimization
 #' 
+#' set.seed(191210)
+#' 
 #' local_OED <- inactivation_OED("Mafart", parms, temp_profile, parms_fix,
 #'                       n_points, criteria = "E-mod", sensvar = "logN",
 #'                       optim_algorithm = "local")
-#' 
-#' print(local_OED$optim_times)
-#' plot(global_OED)
-#' 
-#' ## OED with global optimization
-#' 
-#' opts_global <- list(maxeval=1000,  local_solver=0,
-#'                     local_finish="DHC", local_iterprint=1)
-#' 
-#' global_OED <- inactivation_OED("Mafart", parms, temp_profile, parms_fix,
-#'                        n_points, criteria = "E-mod", opts_global = opts_global)
 #' 
 #' print(local_OED$optim_times)
 #' plot(local_OED)
@@ -113,7 +104,7 @@ inactivation_OED <- function(inactivation_model, parms, temp_profile, parms_fix,
         
     }
     
-    max_time <- max(temp_profile$temp)
+    max_time <- max(temp_profile$time)
     problem <- list(f=tgt_function,
                     x_L=rep(1e-3, n_points),  # 1e-3 to avoid singularity
                     x_U=rep(max_time, n_points)
