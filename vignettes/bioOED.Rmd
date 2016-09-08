@@ -274,7 +274,7 @@ opts_global <- list(maxeval=1000,  local_solver=0,
                     local_finish="DHC", local_iterprint=1)
 
 global_OED <- inactivation_OED(inactivation_model, parms, temp_profile,
-                               parms_fix, n_points, criteria = "E-mod",
+                               parms_fix, n_points, criteria = "D",
                                opts_global = opts_global)
 
 ```
@@ -291,10 +291,18 @@ The function *inactivation_OED* returns a list of class `OEDinactivation`. It co
 * `optim_times`: optimum measurement times calculated.
 * `penalty`: logical indicating whether a penalty function has been used.
 * `times_min`: minimum time set for the penalty function.
+* `temp_profile`: temperature profile of the experiment.
 
 ```{r}
 print(global_OED$optim_times)
 ```
+
+The object `OEDinactivation` includes an S3 implementation which allows the visualization of the results.
+
+```{r, fig.width=8}
+plot(global_OED)
+```
+
 
 ## Optimum experiment design including penalty function
 
@@ -315,14 +323,14 @@ The function *inactivation_OED* can generate experiment design unrealizable, wit
 The only argument added by this function is `time_min`. It is a numeric value defining the minimum feasible time between measurements.
 
 ```{r}
-time_min <- 10
+time_min <- 8
 ```
 
 ```{r}
 global_OED_penalty <- inactivation_OED_penalty(inactivation_model, parms,
                                                temp_profile, parms_fix,
                                                n_points, time_min,
-                                               criteria = "E-mod", 
+                                               criteria = "D", 
                                                opts_global = opts_global)
 ```
 
@@ -330,6 +338,12 @@ The object returned by *inactivation_OED_penalty()* is identical to the one retu
 
 ```{r}
 print(global_OED_penalty$optim_times)
+```
+
+Again, the results can be easily plotted.
+
+```{r, fig.width=8}
+plot(global_OED_penalty)
 ```
 
 ## References

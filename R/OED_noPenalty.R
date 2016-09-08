@@ -48,6 +48,7 @@
 #'          \item optim_times: Optimum measurement times calculated.
 #'          \item penalty: Logical indicating whether penalty function was
 #'                used.
+#'          \item temp_profile: Temperature profile of the experiment.
 #'          }
 #' 
 #' @examples
@@ -71,6 +72,7 @@
 #'                       optim_algorithm = "local")
 #' 
 #' print(local_OED$optim_times)
+#' plot(global_OED)
 #' 
 #' ## OED with global optimization
 #' 
@@ -81,7 +83,7 @@
 #'                        n_points, criteria = "E-mod", opts_global = opts_global)
 #' 
 #' print(local_OED$optim_times)
-#' 
+#' plot(local_OED)
 #'
 inactivation_OED <- function(inactivation_model, parms, temp_profile, parms_fix,
                      n_points, criteria = "D",
@@ -160,6 +162,7 @@ inactivation_OED <- function(inactivation_model, parms, temp_profile, parms_fix,
     out$optim_times <- sort(best_points)
     out$penalty <- FALSE
     out$time_min <- NA
+    out$temp_profile <- temp_profile
     
     out
 }

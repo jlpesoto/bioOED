@@ -21,13 +21,31 @@ plot.parCorrelation <- function(x, y = NULL, ...) {
              tl.col="black", tl.srt=45, #Text label color and rotation
              # hide correlation coefficient on the principal diagonal
              diag=FALSE )
-    
-    
-    
 }
 
-
-
+#'
+#' Plot of OEDinactivation 
+#' 
+#' @importFrom ggplot2 geom_vline
+#' 
+#' @param x An instance of OEDinactivation
+#' @param y Ignored
+#' @param ... Ignored
+#' 
+#' @export
+#' 
+plot.OEDinactivation <- function(x, y = NULL, ...) {
+    
+    temp_profile <- x$temp_profile
+    times <- seq(0, max(temp_profile$time), length = 100)
+    
+    prediction <- predict_inactivation(x$model, times,
+                                       c(x$parms, x$parms_fix),
+                                       temp_profile)
+    
+    plot(prediction) + geom_vline(xintercept = x$optim_times,
+                                  linetype = 2, colour = "red", size = 1)
+}
 
 
 
