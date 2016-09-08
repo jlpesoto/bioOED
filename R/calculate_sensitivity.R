@@ -73,7 +73,8 @@ inactivation_sens_handler <- function(model_parms, inactivation_model,
 
     prediction_results <- predict_inactivation(inactivation_model, times,
                                                c(model_parms, parms_fix),
-                                               temp_profile)
+                                               temp_profile,
+                                               atol = 1e-12, rtol = 1e-12)
     
     return(prediction_results$simulation[,1:3])
     
