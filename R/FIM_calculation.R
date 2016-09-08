@@ -52,7 +52,7 @@ criterium_modE <- function(FIM, eig_tol = 1e-10) {
     
     min_eig <- min(eig_vals$values)
     
-    if (min_eig < eig_tol) {
+    if (abs(min_eig) < eig_tol) {
         
         return(1e20)
         
