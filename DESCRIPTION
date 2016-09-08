@@ -12,7 +12,8 @@ Description: Extends the bioinactivation package with functions for Sensitivity 
 License: GPL-3
 LazyData: TRUE
 Imports: FME (>= 1.3.2),
-         bioinactivation (>= 1.1.2)
+         bioinactivation (>= 1.1.2),
+         corrplot(>= 0.73)
 Suggests: knitr (>= 1.9),
           testthat (>= 0.9.1)
 VignetteBuilder: knitr

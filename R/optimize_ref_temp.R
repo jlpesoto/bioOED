@@ -118,7 +118,9 @@ refTemp_optim_handler <- function(temp_ref, inactivation_model, parms,
 #' parms_fix <- c(temp_ref = 57.5)
 #' parms <- c(delta_ref = 3.9, z = 4.2, p = 1, N0 = 1e6)
 #' temp_profile <- data.frame(time = c(0, 60), temperature = c(30, 60))
-#' calculate_pars_correlation("Mafart", parms, temp_profile, parms_fix)
+#' correlations <- calculate_pars_correlation("Mafart", parms,
+#'                                             temp_profile, parms_fix)
+#' plot(correlations)
 #' 
 calculate_pars_correlation <- function(inactivation_model, parms,
                                        temp_profile, parms_fix,
@@ -130,6 +132,7 @@ calculate_pars_correlation <- function(inactivation_model, parms,
     
     sensitivities <- select_(sensitivities, quote("-x"), quote("-var"))
     correlations <- cor(sensitivities, use = "complete.obs")
+    class(correlations) <- c("parCorrelation", class(correlations))
     correlations
 }
 
