@@ -137,11 +137,18 @@ pars_correlation <- calculate_pars_correlation("Mafart", parms,
                                                temp_profile, parms_fix)
 ```
 
-*calculate_pars_correlation()* provides a matrix containing the correlation between the sensitivity functions of the model parameters considered.
+*calculate_pars_correlation()* provides a matrix of class `parCorrelation` containing the correlation between the sensitivity functions of the model parameters considered.
 
 ```{r}
 print(pars_correlation)
 ```
+
+This object includes an S3 method for plot, allowing to visualize the results of the calculation.
+
+```{r, fig.width=8}
+plot(pars_correlation)
+```
+
 
 ## Optimization of the reference temperature
 
