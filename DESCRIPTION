@@ -1,8 +1,8 @@
 Package: bioOED
 Type: Package
 Title: Sensitivity Analysis and Optimum Experiment Design for microbial inactivation
-Version: 0.0.0-9000
-Date: 2016-08-12
+Version: 0.0.1
+Date: 2017-03-12
 Authors@R: c(person("Alberto", "Garre", email = "garre.alberto@gmail.com", role = c("aut", "cre")),
              person("Jose Lucas", "Penalver", email = "", role = "aut"),
              person("Pablo S.", "Fernandez", email = "pablo.fernandez@upct.es", role = "aut"),

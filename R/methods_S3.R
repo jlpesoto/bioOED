@@ -27,6 +27,7 @@ plot.parCorrelation <- function(x, y = NULL, ...) {
 #' Plot of OEDinactivation 
 #' 
 #' @importFrom ggplot2 geom_vline
+#' @importFrom bioinactivation predict_inactivation
 #' 
 #' @param x An instance of OEDinactivation
 #' @param y Ignored
