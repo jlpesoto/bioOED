@@ -2,6 +2,11 @@
 #'
 #' Penalty Function for OED
 #' 
+#' @param time_points Numeric vector of time points for the measurements.
+#' @param time_min Numeric defining the minimum time between measurements.
+#' @param a Numeric defining the shape of the penalty function. 1e15 by default.
+#' @param b Numeric defining the shape of the penalty function. 2e15 by default.
+#' 
 penalty_function <- function(time_points, time_min, a = 1e15, b = 2e15) {
     
     sorted_times <- sort(time_points)
@@ -26,6 +31,10 @@ penalty_function <- function(time_points, time_min, a = 1e15, b = 2e15) {
 #'
 #' Objective Function for the D Criterium with Penalty
 #' 
+#' @param times Numeric vector of points where the FIM is calculated.
+#' @param sensitivities An object returned by sensitivity_inactivation.
+#' @param time_min Numeric defining the minimum time between measurements.
+#' 
 objective_D_penalty <- function(times, sensitivities, time_min) {
     
     FIM <- calculate_FIM(sensitivities, times)
@@ -38,6 +47,10 @@ objective_D_penalty <- function(times, sensitivities, time_min) {
 
 #'
 #' Objective Function for the modified-E Criterium with Penalty
+#' 
+#' @param times Numeric vector of points where the FIM is calculated.
+#' @param sensitivities An object returned by sensitivity_inactivation.
+#' @param time_min Numeric defining the minimum time between measurements.
 #' 
 objective_Emod_penalty <- function(times, sensitivities, time_min) {
     

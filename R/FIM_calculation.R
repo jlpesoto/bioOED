@@ -13,6 +13,7 @@
 #' 
 #' @importFrom dplyr select_
 #' @importFrom dplyr %>%
+#' @importFrom stats approx
 #' 
 #' @export
 #' 
@@ -37,6 +38,8 @@ calculate_FIM <- function(sensitivities, times) {
 #'
 #' D Optimality Criterium
 #' 
+#' @param FIM Matrix with the values of the Fisher Information Matrix
+#' 
 criterium_D <- function(FIM) {
     
     -det(FIM)
@@ -45,6 +48,10 @@ criterium_D <- function(FIM) {
 
 #'
 #' Modified-E Optimality Criterium
+#' 
+#' @param FIM Matrix with the values of the Fisher Information Matrix
+#' @param eig_tol Tolerance for the eigen values. If any eigen value is lower than this
+#' value, the FIM is singular and a high value (1e20) is returned. 1e-10 by default.
 #' 
 criterium_modE <- function(FIM, eig_tol = 1e-10) {
 

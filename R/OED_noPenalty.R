@@ -161,6 +161,9 @@ inactivation_OED <- function(inactivation_model, parms, temp_profile, parms_fix,
 #'
 #' Objective Function for the D Criterium
 #' 
+#' @param times A numeric vector of points where the FIM will be calculated.
+#' @param sensitivities An object returned by sensitivity_inactivation.
+#' 
 objective_D <- function(times, sensitivities) {
     
     FIM <- calculate_FIM(sensitivities, times)
@@ -173,6 +176,9 @@ objective_D <- function(times, sensitivities) {
 
 #'
 #' Objective Function for the modified-E Criterium
+#' 
+#' @param times A numeric vector of points where the FIM will be calculated.
+#' @param sensitivities An object returned by sensitivity_inactivation.
 #' 
 objective_Emod <- function(times, sensitivities) {
     

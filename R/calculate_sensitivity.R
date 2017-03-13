@@ -19,6 +19,7 @@
 #' that the parameter value is used. 1 by default.
 #' @param sensvar The output variable for which the sensitivity will be 
 #' estimated. \code{"logN"} by default.
+#' @param ... Additional arguments passed to sensFun
 #' 
 #' @importFrom FME sensFun
 #' 
@@ -67,6 +68,17 @@ sensitivity_inactivation <- function(inactivation_model, parms,
 #' Handler for the calculation of sensitivities of inactivation models
 #' 
 #' @importFrom bioinactivation predict_inactivation
+#' 
+#' @param model_parms A named vector or list with the values of the model parameters. See
+#' the documentation of bioinactivation::predict_inactivation.
+#' @param inactivation_model A character defining the inactivation model to use. See
+#' the documentation of bioinactivation::predict_inactivation.
+#' @param times A numeric vector describing the points where the solution will be calculated.
+#' See the documentation of bioinactivation::predict_inactivation.
+#' @param temp_profile A data frame describing the temperature profile. See
+#' the documentation of bioinactivation::predict_inactivation.
+#' @param parms_fix A named vector or list with the values of the known model parameters. See
+#' the documentation of bioinactivation::predict_inactivation.
 #' 
 inactivation_sens_handler <- function(model_parms, inactivation_model,
                                       times, temp_profile, parms_fix) { 

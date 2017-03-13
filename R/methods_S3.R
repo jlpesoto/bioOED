@@ -33,6 +33,8 @@ plot.parCorrelation <- function(x, y = NULL, ...) {
 #' @param y Ignored
 #' @param ... Ignored
 #' 
+#' @importFrom graphics plot
+#' 
 #' @export
 #' 
 plot.OEDinactivation <- function(x, y = NULL, ...) {

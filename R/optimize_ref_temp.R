@@ -56,6 +56,17 @@ optimize_refTemp <- function(temp_ref0, lower, upper,
 #'
 #' Hanlder for the Optimization of Reference Temperature
 #' 
+#' @param temp_ref0 Initial value of the reference temperature.
+#' @param temp_ref New value of the reference temperature.
+#' @param inactivation_model Character identifying the inactivation model
+#' to use for the calculation.
+#' @param parms Numeric vector with the nominal values of the model parameters.
+#' @param n_times Numeric value specifying the nombers of time points where 
+#'        the sensitivity functions will be calculated. 100 by default.
+#' @param temp_profile Data frame describing the environmental conditions.
+#' @param parms_fix Nominal value of the parameters not considered for the
+#'        sensitivity.
+#' 
 refTemp_optim_handler <- function(temp_ref, inactivation_model, parms,
                                   temp_profile, parms_fix, n_times,
                                   temp_ref0) {
@@ -110,6 +121,7 @@ refTemp_optim_handler <- function(temp_ref, inactivation_model, parms,
 #' estimated. \code{"logN"} by default.
 #' 
 #' @importFrom dplyr select_
+#' @importFrom stats cor
 #' 
 #' @export 
 #' 
