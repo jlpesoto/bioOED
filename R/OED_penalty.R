@@ -15,7 +15,7 @@ penalty_function <- function(time_points, time_min, a = 1e15, b = 2e15) {
     
     if (time_min > min_diff) {
         
-        results <- ((a-b)/3)*min_diff + b
+        results <- ((a-b)/time_min)*min_diff + b
         
     } 
     else {

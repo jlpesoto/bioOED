@@ -1,0 +1,363 @@
+---
+title: "bioOED: Optimum Experiment Design for Microbial Inactivation"
+author: "Alberto Garre, Jose Lucas Peñalver Soto, Pablo S. Fernandez, Jose A. Egea"
+date: "`r Sys.Date()`"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{bioOED_vignette}
+  %\VignetteEngine{knitr::rmarkdown}
+  \usepackage[utf8]{inputenc}
+---
+
+## Introduction
+
+The mathematical models commonly used for the description of microbial inactivation contain parameters whose exact value, at the time, cannot be analytically determined. Hence, they have to be estimated using experiments. This type of procedures do not provide an exact value of the model parameters. Instead, they estimate their probability distribution.
+
+The level of uncertainty strongly depends on the experiment performed. For instance, Grijspeerd and Vanrrolleghem (1999) are able to half the estimated standard deviation of the model parameters for microbial growth using an optimum experiment design. This results in a more accurate description of the process.
+
+The R-package __bioOED__ implements functions for the design of optimum experiments, as well as for the calculation of local sensitivities, of microbial inactivation processes. This package can be downloaded form the Comprehensive R Archive Network (CRAN). Once installed, it can be loaded as
+
+```{r}
+library(bioOED)
+```
+__bioOED__ adds the following functions to the namespace:
+
+* *sensitivity_inactivation()*: calculates the local sensitivity functions of the output variable for a given set of nominal model parameters.
+* *calculate_pars_correlation()*: calculates the correlation between the sensitivity functions of the model parameters (i.e. the structural identificability) for a set of nominal model parameters.
+* *calculate_FIM()*: calculates the Fisher Information Matrix (FIM).
+* *optimize_refTemp()*: finds the reference temperature which optimizes the structural identificability of the model.
+* *inactivation_OED()*: Designs an optimum experiment based on a given measurement of the FIM.
+* *inactivation_OED_penalty()*: Similar to *inactivation_OED()*, although including a penalty term which penalizes measurements closer than a given threshold.
+
+The simulations of microbial inactivation performed by __bioOED__ are based on the functions implemented in the __bioinactivation__ (Garre et al., 2016) package. Hence, only the inactivation models implemented in this package (Bigelow, Peleg, Mafart and Geeraerd) are available in __bioOED__. The calculation of local sensitivities is based on the features implemented in the __FME__ package (Soetaert et al., 2010).
+
+## Fisher Information Matrix
+
+The Fisher Information Matrix ($FIM$) for a variable $y$ which depends on a vector of parameters ($\theta$) at a series of time points ($t_i$) is defined by the following equation:
+
+$$
+    FIM = \sum_i \left( \frac{\partial y}{\partial \theta} \left( t_i \right) \right)^T \cdot Q_i \cdot \left( \frac{\partial y}{\partial \theta} \left( t_i \right) \right)
+$$
+
+where $Q_i$ is a matrix of weights. In this document, $Q_i$ will be considered as the identity matrix.
+
+The FIM is relevant for the OED because its inverse is an estimator of the covariance matrix of the error. Hence, an OED can be made by optimizing certain measurements of the FIM. __bioOED__ implements two of this criteria: D and modified E. The D-criterion consists on the maximization of the determinant of the FIM. It is equivalent to the minimization of the volume of the confidence ellipsoids. The modified E criterion is based on the minimization of the ratio between the maximum and minimum eigenvalue of the FIM ($\mathrm{abs} \frac{\lambda_{max}}{\lambda_{min}}$). 
+
+## Calculation of local sensitivities
+
+Local sensitivities ($S_{ij}$) play a key role on Optimum Experiment Design. These functions quantify that variation of the output variable ($y_i$) caused by a unitary variation of the model parameter ($\theta_j$), as described in the following equation.
+$$
+    S_{ij} = \frac{\partial y_i}{\partial \theta_j}
+$$
+
+Typically, this derivative cannot be calculated in close form and one has to use numeric methods. __bioOED__ uses the function *sensFun()* from the __FME__ package for this purpouse, which approximates the local sensitivity functions using finite differences:
+$$
+    S_{ij}(t) \approx
+    \frac{y \left( \theta + \Delta \theta \right) - y \left( \theta \right)}
+    {\Delta \theta}
+$$
+
+__bioOED__ provides the function *sensitivity_inactivation()*, which allows to calculate estimate the local sensitivity functions. This function has 8 input arguments:
+
+* *inactivation_model*
+* *parms*
+* *temp_profile*
+* *parms_fix*
+* *n_times*
+* *varscale*
+* *parscale*
+* *sensvar*
+
+The inactivation model to use for the calculation is defined by the character argument *inactivation_model*. It must be consistent with the requirements of the function *predict_inactivation* from the __bioinactivation__ package. Refer to the help package of this function for more information.
+
+```{r}
+inactivation_model <- "Bigelow"
+```
+
+The environmental conditions are defined through the data frame *temp_profile*. Its columns, named `time` and `temperature` must provide discrete values of the temperature profile. Intermediate points will be calculated by linear interpolation.
+
+```{r}
+temp_profile <- data.frame(time = c(0, 60),
+                           temperature = c(30, 60))
+```
+
+The nominal values of the model parameters are provided by the arguments `parms` and `parms_fix`. Both arguments follow the same restriction as the equivalent ones for the *predict_inactivation()*  function from the __bioinactivation__ package. Note that local sensitivities will be calculated only for those parameters included in the `parms` argument.
+
+```{r}
+parms_fix <- c(temp_ref = 57.5, N0 = 1e6)
+parms <- c(D_R = 3.9,
+           z = 4.2
+           )
+```
+
+The local sensitivities are estimated at points uniformly distributed between the maximum and minimum values of time provided in the *temp_profile* argument. The number of points is provided by the integer argument *n_times* (100 by default).
+
+The local sensitivities can be scaled using the *varscale* and *parscale* input arguments (see the help page of *sensFun* from the __FME__ package). By default, both arguments are set to 1 (i.e. no scaling).
+
+The argument `sensvar` allows choosing whether the sensitivity of the microbial count ($N$) or its decimal logarithm ($\log N$) with respect to the model parameters will be calculated. By default, the sensitivity of $\log N$ is calculated.
+
+```{r}
+sensitivity <- sensitivity_inactivation(inactivation_model,
+                                        parms, temp_profile,
+                                        parms_fix)
+```
+
+The *sensitivity_inactivation()* function provides a data frame of class `"sensFun"` (defined in the __FME__ package). This data frame contains the values estimated of the local sensitivities at each time point with respect to each one of the model variables.
+
+```{r}
+head(sensitivity)
+```
+
+Moreover, it includes an S3 method for *plot()* which allows the visualization of the evolution of the local sensitivities through the experiment.
+
+```{r, fig.width=8, fig.height=6}
+plot(sensitivity)
+```
+
+## Structural identificability
+
+Some mathematical models may be ill-defined in the sense that different combination of its model parameters may provide the same output. This is defined as structural identificability of the model. It can be calculated as the correlation between the local sensitivity functions with respect to the different functions.
+
+The __bioOED__ package implements the function *calculate_pars_correlation()* which calculates the correlation between the sensitivity function of the model, providing an indicator of its structural identificability. This function has 6 input arguments:
+
+* *inactivation_model*
+* *parms*
+* *temp_profile*
+* *parms_fix*
+* *n_times*
+* *sensvar*
+
+They are defined identically to those defined for *sensitivity_inactivation()* and will not be repeated here.
+
+```{r}
+parms_fix <- c(temp_ref = 57.5)
+parms <- c(delta_ref = 3.9, z = 4.2, p = 1, N0 = 1e6)
+temp_profile <- data.frame(time = c(0, 60), temperature = c(30, 60))
+pars_correlation <- calculate_pars_correlation("Mafart", parms,
+                                               temp_profile, parms_fix)
+```
+
+*calculate_pars_correlation()* provides a matrix of class `parCorrelation` containing the correlation between the sensitivity functions of the model parameters considered.
+
+```{r}
+print(pars_correlation)
+```
+
+This object includes an S3 method for plot, allowing to visualize the results of the calculation.
+
+```{r, fig.width=8}
+plot(pars_correlation)
+```
+
+
+## Optimization of the reference temperature
+
+The reference temperature can have a significant influence in the structural identificability of the model (Dolan and Mishra, 2013). The function *optimize_refTemp()* is able to calculate the reference temperature which optimizes the structural identificability of the model for a given set of nominal parameters and environmental conditions. This function has 8 input arguments:
+
+* *temp_ref0*
+* *lower*
+* *upper*
+* *inactivation_model*
+* *parms*
+* *temp_profile*
+* *parms_fix*
+* *n_times*
+
+The optimization is performed using the Brent method implemented in the *optim()* function from the **stats** package. The numeric argument *temp_ref0* provides an initial guess for the optimization. Moreover, lower and upper bounds for the optimization are provided by the numeric arguments *lower* and *upper*.
+
+```{r}
+temp_ref0 <- 57
+lower <- 50
+upper <- 70
+```
+
+The inactivation model to use for the calculation is defined through the argument *inactivation_model*. This argument has to be compatible with the equivalent one for the *predict_inactivation()* function from the **bioinactivation** package.
+
+```{r}
+inactivation_model <- "Mafart"
+```
+
+The conditions of the experiment are defined through the *temp_profile* argument. It must be a data frame with columns named `time` and `temperature` providing discrete values of the temperature profile. Intermediate values are calculated by linear interpolation.
+
+```{r}
+temp_profile <- data.frame(time = c(0, 60),
+                           temperature = c(30, 60))
+```
+
+The nominal values of the model parameters are provided using the `parms` and `parms_fix` arguments. Both must be compatible with the requirements of the equivalent arguments for the *predict_inactivation()* function from the __bioinactivation__ package. The parameters included in `parms_fix` will not be included in the calculation of the local sensitivities. Therefore, it is recommended to include in this argument those parameters which are known before performing the experiment. The D-value at the reference temperature (or $\delta$) and the z-value must be included in `parms` (i.e. cannot be fixed.)
+
+Note that the D-value at the reference temperature (or $\delta$) depend on the reference temperature. Hence, the value provided in `parms` must be the one corresponding to the reference temperature provided in `temp_ref0`. 
+
+```{r}
+parms <- c(delta_ref = 3.9, z = 4.2, p = 1, N0 = 1e6)
+parms_fix <- c()
+```
+
+
+The local sensitivities are estimated at a uniformly distributed time points. The number of time points used for the calculation is defined through the `n_times` argument. By default, it is set to 100.
+
+```{r}
+optim_refTemp <- optimize_refTemp(temp_ref0, lower, upper,
+                                  inactivation_model, parms, temp_profile,
+                                  parms_fix)
+```
+
+*optimize_refTemp()* returns the object generated by the *optim()* function. The calculated optimum value of the reference temperature can be accessed in the `par` entry of this object.
+
+```{r}
+print(optim_refTemp$par)
+```
+
+The convergence of the optimization algorithm should be checked in the `convergence` entry. If its value is different from 0, convergence was not achieved.
+
+```{r}
+print(optim_refTemp$convergence)
+```
+
+## Optimum experiment design of microbial inactivation
+
+The function *inactivation_OED()* is able to generate an optimum experiment design based on the FIM for a microbial inactivation experiment. This function has 10 input arguments:
+
+* *inactivation_model*
+* *parms*
+* *temp_profile*
+* *parms_fix*
+* *n_points*
+* *criteria*
+* *n_times*
+* *sensvar*
+* *optim_algorithm*
+* *opts_global*
+
+The inactivation model to use for the calculation is defined by the input argument *inactivation_model*. It must be compatible with the *predict_inactivation()* function from the __bioinactivation__ package.
+
+```{r}
+inactivation_model <- "Mafart"
+```
+
+The nominal values of the model parameters are provided by the arguments `pars` and `parms_fix`. Note that local sensitivities will only be calculated for the model parameters included in `pars`. Hence, those included in `parms_fix` will not be considered for the OED. They also must be compatible with *predict_inactivation()*.
+
+```{r}
+parms_fix <- c(temp_ref = 57.5)
+parms <- c(delta_ref = 3.9,
+           z = 4.2,
+           p = 1,
+           N0 = 1e6
+           )
+```
+
+The conditions of the experiment are defined through the input argument `temp_profile`. It must be a data frame which provides discrete values of `time` and `temperature`. Intermediate values will be calculated by linear interpolation.
+
+```{r}
+temp_profile <- data.frame(time = c(0, 60), temperature = c(30, 60))
+```
+
+The number of measurements to be taken during the experiment are defined by the argument `n_points`. It must be an integer greater than 0.
+
+```{r}
+n_points <- 5
+```
+
+The criteria for the OED is defined by the argument `criteria`. It must be a character with the value `"D"` or `"E-mod"`. By default, the D-criterion is set.
+
+The local sensitivity functions are calculated at a set of discrete uniformly distributed time points. The number of points to use is defined by the argument `n_times` (100 by default).
+
+The variable to target for the OED is set by the argument `sensvar`. It must be a character equal to `"logN"` (default) or `"N"`.
+
+The OED can be generated using either a local or a global optimization algorithm. The selection is made using the argument `optim_algorithm`. In case it equals `"global"` (default) a global optimization algorithm is used. The local algorithm is used when this arguments equals `"local"`.
+
+The global optimization algorithm used is the MEIGO algorithm from the __MEIGOR__ package  (Egea et al., 2012). By default, a global solver with a maximum of 50000 function evaluations and printout on every step is selected. This can be changed through the `opts_global` argument. For information regarding the format of this argument, refer to the help page of the *MEIGO()* function.
+
+```{r}
+
+opts_global <- list(maxeval=1000,  local_solver=0,
+                    local_finish="DHC", local_iterprint=1)
+
+global_OED <- inactivation_OED(inactivation_model, parms, temp_profile,
+                               parms_fix, n_points, criteria = "D",
+                               opts_global = opts_global)
+
+```
+
+The function *inactivation_OED* returns a list of class `OEDinactivation`. It contains the following entries:
+
+* `optim`: the object returned by the optimization routine.
+* `model`: inactivation model used for the simulation.
+* `parms`: nominal parameters considered for the OED.
+* `parms_fix`: nominal parameters not considered for the OED.
+* `criteria`: optimization criteria followed.
+* `sensvar`: variable targeted for the OED.
+* `optim_algorithm`: optimization algorithm used.
+* `optim_times`: optimum measurement times calculated.
+* `penalty`: logical indicating whether a penalty function has been used.
+* `times_min`: minimum time set for the penalty function.
+* `temp_profile`: temperature profile of the experiment.
+
+```{r}
+print(global_OED$optim_times)
+```
+
+The object `OEDinactivation` includes an S3 implementation which allows the visualization of the results.
+
+```{r, fig.width=8}
+plot(global_OED)
+```
+
+
+## Optimum experiment design including penalty function
+
+The function *inactivation_OED* can generate experiment design unrealizable, with measurements too close in time. This issue is circumvented with the function *inactivation_OED_penalty* , which implements a penalty function to penalize unfeasible solutions. This function has 11 input arguments, 10 of which are identical to those defined for * inactivation_OED()*:
+
+* *inactivation_model*
+* *parms*
+* *temp_profile*
+* *parms_fix*
+* *n_points*
+* *time_min*
+* *criteria*
+* *n_times*
+* *sensvar*
+* *optim_algorithm*
+* *opts_global*
+
+The only argument added by this function is `time_min`. It is a numeric value defining the minimum feasible time between measurements.
+
+```{r}
+time_min <- 8
+```
+
+```{r}
+global_OED_penalty <- inactivation_OED_penalty(inactivation_model, parms,
+                                               temp_profile, parms_fix,
+                                               n_points, time_min,
+                                               criteria = "D", 
+                                               opts_global = opts_global)
+```
+
+The object returned by *inactivation_OED_penalty()* is identical to the one returned by *inactivation_OED()*. The newly calculated optimum design can be checked as before:
+
+```{r}
+print(global_OED_penalty$optim_times)
+```
+
+Again, the results can be easily plotted.
+
+```{r, fig.width=8}
+plot(global_OED_penalty)
+```
+
+## References
+
+Alberto Garre, Pablo S. Fernandez and Jose A. Egea (2016). bioinactivation:
+Simulation of Dynamic Microbial Inactivation. R package version 1.1.2.
+https://CRAN.R-project.org/package=bioinactivation
+
+Karline Soetaert and Thomas Petzoldt (2010). Inverse Modelling,
+Sensitivity and Monte Carlo Analysis in R Using Package FME. Journal of
+Statistical Software, 33(3), 1-28. URL http://www.jstatsoft.org/v33/i03/.
+
+K. Grijspeerdt and P. Vanrolleghem (1999). Estimating the parameters of the Baranyi model for bacterial growth. Food Microbiology, 16(6), 593-605.
+
+Kirk D. Dolan and Dharmendra K. Mishra (2013). Parameter Estimation in Food science. Annual revie of Food Science and Tehnology, 4, 401-422.
+
+Jose A. Egea, David Enriques, Alexandre Fdez. Villaverde and Thomas Cokelaer (2012). MEIGOR: MEIGO - Metaheuristics for bioinformatics global optimization. R package version 1.0.0.
