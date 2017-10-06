@@ -4,18 +4,19 @@
 #' 
 #' @param time_points Numeric vector of time points for the measurements.
 #' @param time_min Numeric defining the minimum time between measurements.
-#' @param a Numeric defining the shape of the penalty function. 1e15 by default.
-#' @param b Numeric defining the shape of the penalty function. 2e15 by default.
+#' @param a_penalty Numeric defining the shape of the penalty function. 1e15 by default.
+#' @param b_penalty Numeric defining the shape of the penalty function. 2e15 by default.
 #' 
-penalty_function <- function(time_points, time_min, a = 1e15, b = 2e15) {
-    
+penalty_function <- function(time_points, time_min,
+                             a_penalty = 1e15, b_penalty = 2e15) {
+
     sorted_times <- sort(time_points)
     differences <- diff(sorted_times)
     min_diff <- min(differences)
     
     if (time_min > min_diff) {
         
-        results <- ((a-b)/time_min)*min_diff + b
+        results <- ((a_penalty-b_penalty)/time_min)*min_diff + b_penalty
         
     } 
     else {
@@ -34,12 +35,13 @@ penalty_function <- function(time_points, time_min, a = 1e15, b = 2e15) {
 #' @param times Numeric vector of points where the FIM is calculated.
 #' @param sensitivities An object returned by sensitivity_inactivation.
 #' @param time_min Numeric defining the minimum time between measurements.
+#' @param ... Additional arguments passed to penalty_function.
 #' 
-objective_D_penalty <- function(times, sensitivities, time_min) {
+objective_D_penalty <- function(times, sensitivities, time_min, ...) {
     
     FIM <- calculate_FIM(sensitivities, times)
     
-    out <- criterium_D(FIM) + penalty_function(times, time_min)
+    out <- criterium_D(FIM) + penalty_function(times, time_min, ...)
     
     out
     
@@ -51,12 +53,13 @@ objective_D_penalty <- function(times, sensitivities, time_min) {
 #' @param times Numeric vector of points where the FIM is calculated.
 #' @param sensitivities An object returned by sensitivity_inactivation.
 #' @param time_min Numeric defining the minimum time between measurements.
+#' @param ... Additional arguments passed to penalty_function.
 #' 
-objective_Emod_penalty <- function(times, sensitivities, time_min) {
+objective_Emod_penalty <- function(times, sensitivities, time_min, ...) {
     
     FIM <- calculate_FIM(sensitivities, times)
     
-    out <- criterium_modE(FIM) + penalty_function(times, time_min)
+    out <- criterium_modE(FIM) + penalty_function(times, time_min, ...)
     
     out
     
@@ -98,6 +101,7 @@ objective_Emod_penalty <- function(times, sensitivities, time_min) {
 #' @param opts_global List defining the options for the global optimization
 #'        algorithm (see \code{\link{MEIGO}}). By default, global solver with
 #'        a maximum of 50000 function evaluations and printout on every step.
+#' @param ... Additional arguments passed to penalty_function.
 #' 
 #' @export
 #' 
@@ -161,7 +165,7 @@ inactivation_OED_penalty <- function(inactivation_model, parms, temp_profile, pa
                                      n_points, time_min, criteria = "D",
                                      n_times = 100, sensvar = "logN",
                                      optim_algorithm = "global",
-                                     opts_global = NULL) {
+                                     opts_global = NULL, ...) {
     
     ## Calculate sensitivities
     
@@ -205,13 +209,14 @@ inactivation_OED_penalty <- function(inactivation_model, parms, temp_profile, pa
         results <- optim(times, tgt_function,
                          lower = problem$x_L, upper = problem$x_U,
                          sensitivities = sensitivities,
-                         method = "L-BFGS-B", time_min = time_min)
+                         method = "L-BFGS-B", time_min = time_min, ...)
         
         best_points <- results$par
         
     } else if (grepl(optim_algorithm, "global")) {
         results <- MEIGO(problem, opts_global, algorithm="ESS",
-                         sensitivities = sensitivities, time_min = time_min)
+                         sensitivities = sensitivities, time_min = time_min,
+                         ...)
         
         best_points <- results$xbest
         
