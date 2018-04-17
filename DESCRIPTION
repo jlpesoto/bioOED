@@ -26,7 +26,5 @@ Suggests:
     knitr (>= 1.9),
     testthat (>= 0.9.1),
     rmarkdown
-Remotes:
-    bioc::3.6/MEIGOR
 VignetteBuilder: knitr
 RoxygenNote: 6.0.1
