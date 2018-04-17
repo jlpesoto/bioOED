@@ -11,6 +11,8 @@
 #' 
 #' @importFrom corrplot corrplot
 #' 
+#' @method plot parCorrelation
+#' 
 #' @export
 #' 
 plot.parCorrelation <- function(x, y = NULL, ...) {
@@ -34,6 +36,8 @@ plot.parCorrelation <- function(x, y = NULL, ...) {
 #' @param ... Ignored
 #' 
 #' @importFrom graphics plot
+#' 
+#' @method plot OEDinactivation
 #' 
 #' @export
 #' 
