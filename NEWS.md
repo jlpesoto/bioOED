@@ -1,7 +1,7 @@
 
 ## Version 1.1.4
 
-* The depencency to the MEIGOR package has been added to Remotes.
+* The CITATION file has been updated.
 
 ## Version 1.1.3
 
