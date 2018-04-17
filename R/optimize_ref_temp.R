@@ -29,12 +29,6 @@
 #' 
 #' @export
 #' 
-#' @examples
-#' 
-#' parms <- c(delta_ref = 3.9, z = 4.2, p = 1, N0 = 1e6)
-#' temp_profile <- data.frame(time = c(0, 60), temperature = c(30, 60))
-#' 
-#' optimize_refTemp(57, 50, 70, "Mafart", parms, temp_profile, c())
 #' 
 optimize_refTemp <- function(temp_ref0, lower, upper,
                              inactivation_model, parms,

@@ -150,7 +150,7 @@ objective_Emod_penalty <- function(times, sensitivities, time_min, ...) {
 #' 
 #' ## OED with global optimization
 #' 
-#' opts_global <- list(maxeval=1000,  local_solver=0,
+#' opts_global <- list(maxeval=500,  local_solver=0,
 #'                     local_finish="DHC", local_iterprint=1)
 #' 
 #' global_OED <- inactivation_OED_penalty("Mafart", parms, temp_profile, parms_fix,
