@@ -2,7 +2,7 @@ Package: bioOED
 Type: Package
 Title: Sensitivity Analysis and Optimum Experiment Design for Microbial
     Inactivation
-Version: 0.1.4
+Version: 0.1.4.999
 Date: 2018-04-17
 Authors@R: c(person("Alberto", "Garre", email = "garre.alberto@gmail.com", role = c("aut", "cre")),
              person("Jose Lucas", "Penalver", email = "", role = "aut"),
@@ -21,10 +21,12 @@ Imports:
     ggplot2 (>= 2.1.0),
     stats (>= 3.3.2),
     graphics(>= 3.3.2),
-    MEIGOR (>= 1.0.0)
+    MEIGOR (>= 1.0.0),
+    rlang (>= 0.1.6),
+    tidyr (>= 0.7.2)
 Suggests:
     knitr (>= 1.9),
     testthat (>= 0.9.1),
     rmarkdown
 VignetteBuilder: knitr
-RoxygenNote: 6.0.1
+RoxygenNote: 6.1.0
