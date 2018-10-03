@@ -4,7 +4,18 @@
 #' @param x a numeric vector of length \code{n} defining the design matrix.
 #' The first n/2 elements are the time points and the last n/2 are the 
 #' temperatures of these points.
+#' @param model character string defining the inactivation model to use.
+#' @param pars list defining the model parameters according to the rules defined in the bioinactivation package.
+#' @import tidyselect
+#' @importFrom dplyr mutate 
+#' @return Numeric value of the objective function for criterium D, which is a determinant of the FIM.
 #' 
+#' @examples  
+#' pars <- list(temp_crit = 55,
+#'         n = 1.5,
+#'         k_b = 0.1)
+#' detFIM(x = c(10,15, 20, 25), "Peleg", pars)
+#'
 detFIM <- function(x, model, pars){
     
     half <- length(x)/2
@@ -36,6 +47,15 @@ detFIM <- function(x, model, pars){
 #' 
 #' @export
 #' 
+#' @examples 
+#' pars <- list(temp_crit = 55,
+#' n = 1.5,
+#' k_b = 0.1)
+#' OED <- isothermal_OED("Peleg", pars,
+#'                             n_points=10, min_time=0, max_time=100, min_temp=52, max_temp=60,
+#'                             opts = NULL)
+#' OED$optim$xbest
+#'
 isothermal_OED <- function(model, pars,
                            n_points, min_time, max_time, min_temp, max_temp,
                            opts = NULL) {

@@ -140,6 +140,21 @@ isothermal_sensitivities <- function(model, exp_design, pars) {
 #' 
 #' @export
 #'
+#'@examples
+#'
+#' time_profile <- seq(0, 50, length = 20)
+#' Temp_profile <- seq(52.5,60, length = 3)
+#' 
+#' exp_design <- expand.grid(time_profile,Temp_profile) %>%
+#'   rename(times = Var1, temperature = Var2)
+#' 
+#' pars <- list(temp_crit = 55,
+#'              n = 1.5,
+#'              k_b = 0.1)
+#' 
+#' get_isothermal_correlation("Peleg", exp_design, pars )
+#' 
+
 get_isothermal_correlation <- function(model, exp_design, pars) {
     
     out <- isothermal_sensitivities(model, exp_design, pars) %>%
@@ -164,6 +179,20 @@ get_isothermal_correlation <- function(model, exp_design, pars) {
 #' 
 #' @export
 #' 
+#' @examples 
+#' 
+#' time_profile <- seq(0, 50, length = 20)
+#' Temp_profile <- seq(52.5,60, length = 3)
+#' 
+#' exp_design <- expand.grid(time_profile,Temp_profile) %>%
+#'   rename(times = Var1, temperature = Var2)
+#' 
+#' pars <- list(temp_crit = 55,
+#'              n = 1.5,
+#'              k_b = 0.1)
+#' 
+#' calculate_isothermal_FIM("Peleg", exp_design, pars )
+
 calculate_isothermal_FIM <- function(model, exp_design, pars) {
     
     sens <- isothermal_sensitivities(model, exp_design, pars) %>%
@@ -175,24 +204,3 @@ calculate_isothermal_FIM <- function(model, exp_design, pars) {
     
     
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

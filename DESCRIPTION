@@ -29,4 +29,5 @@ Suggests:
     testthat (>= 0.9.1),
     rmarkdown
 VignetteBuilder: knitr
+Encoding: UTF-8
 RoxygenNote: 6.1.0
