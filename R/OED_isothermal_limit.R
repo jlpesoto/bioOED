@@ -23,7 +23,7 @@
 #'         k_b = 0.1)
 #' criterium_D(x = c(10,15, 20, 25), "Peleg", pars, limit=7)
 #'
-criterium_D <- function(x, model, pars, limit){
+criterium_D_iso <- function(x, model, pars, limit){
   
   half <- length(x)/2
   
@@ -62,7 +62,7 @@ criterium_D <- function(x, model, pars, limit){
 #'         k_b = 0.1)
 #' criterium_Emod(x = c(10,15, 20, 25), "Peleg", pars, limit=7)
 #' 
-criterium_Emod <- function(x, model, pars, limit) {
+criterium_Emod_iso <- function(x, model, pars, limit) {
   tol_eigen <- 1e-100
   half <- length(x)/2
   
@@ -107,7 +107,7 @@ criterium_Emod <- function(x, model, pars, limit) {
 #'         k_b = 0.1)
 #' criterium_E(x = c(10,15, 20, 25), "Peleg", pars, limit=7)
 #' 
-criterium_E <- function(x, model, pars, limit) {
+criterium_E_iso <- function(x, model, pars, limit) {
   tol_det <- 1e-5
   half <- length(x)/2
   
@@ -153,7 +153,7 @@ criterium_E <- function(x, model, pars, limit) {
 #'         k_b = 0.1)
 #' criterium_Amod(x = c(10,15, 20, 25), "Peleg", pars, limit=7)
 #'
-criterium_Amod <- function(x, model, pars, limit) {
+criterium_Amod_iso <- function(x, model, pars, limit) {
   half <- length(x)/2
   time_points <- x[1:half]
   temp_points <- x[(half+1):length(x)]
@@ -191,7 +191,7 @@ criterium_Amod <- function(x, model, pars, limit) {
 #'         k_b = 0.1)
 #' criterium_A(x = c(10,15, 20, 25), "Peleg", pars, limit=7)
 #'
-criterium_A <- function(x, model, pars, limit) {
+criterium_A_iso <- function(x, model, pars, limit) {
   tol_det <- 1e-5
   half <- length(x)/2
   
@@ -258,7 +258,7 @@ isothermal_OED_limit <- function(model, pars, limit,
     
     if(criterium=="D") {
       
-      problem <- list(f = criterium_D,
+      problem <- list(f = criterium_D_iso,
                       x_L = c(rep(min_time, n_points),rep(min_temp, n_points)),
                       x_U = c(rep(max_time, n_points),rep(max_temp, n_points))
                      
@@ -267,7 +267,7 @@ isothermal_OED_limit <- function(model, pars, limit,
     }
     if(criterium=="E_mod")
     {
-      problem <- list(f = criterium_Emod,
+      problem <- list(f = criterium_Emod_iso,
                       x_L = c(rep(min_time, n_points),rep(min_temp, n_points)),
                       x_U = c(rep(max_time, n_points),rep(max_temp, n_points))
 
@@ -276,7 +276,7 @@ isothermal_OED_limit <- function(model, pars, limit,
     }
     if(criterium=="E")
     {
-      problem <- list(f = criterium_E,
+      problem <- list(f = criterium_E_iso,
                       x_L = c(rep(min_time, n_points),rep(min_temp, n_points)),
                       x_U = c(rep(max_time, n_points),rep(max_temp, n_points))
 
@@ -285,7 +285,7 @@ isothermal_OED_limit <- function(model, pars, limit,
     }
     if(criterium=="A_mod")
     {
-      problem <- list(f = criterium_Amod,
+      problem <- list(f = criterium_Amod_iso,
                       x_L = c(rep(min_time, n_points),rep(min_temp, n_points)),
                       x_U = c(rep(max_time, n_points),rep(max_temp, n_points))
                       
@@ -294,7 +294,7 @@ isothermal_OED_limit <- function(model, pars, limit,
     }
     if(criterium=="A")
     {
-      problem <- list(f = criterium_A,
+      problem <- list(f = criterium_A_iso,
                       x_L = c(rep(min_time, n_points),rep(min_temp, n_points)),
                       x_U = c(rep(max_time, n_points),rep(max_temp, n_points))
 
