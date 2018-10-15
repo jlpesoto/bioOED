@@ -21,6 +21,7 @@ Fisher Information Matrix for isothermal experiments
 }
 \examples{
 
+library("dplyr")
 time_profile <- seq(0, 50, length = 20)
 Temp_profile <- seq(52.5,60, length = 3)
 

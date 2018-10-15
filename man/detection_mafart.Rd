@@ -6,6 +6,26 @@
 \usage{
 detection_mafart(pars, temperature, limit)
 }
+\arguments{
+\item{pars}{list defining the model parameters according to the rules defined in the bioinactivation package.}
+
+\item{temperature}{numerical value that describes the temperature at which the detection limit will be calculated}
+
+\item{limit}{numerical value describing the maximum number of log-reductions
+that can be identified in the experiment limit = logDL - logN0, where DL
+is the detection limit.}
+}
+\value{
+Numerical value that indicates the limit of detection for that temperature for the Mafart model
+}
 \description{
-Detection limit of the Mafart model
+Calculation of the detection limit for the Mafart model
+}
+\examples{
+ 
+pars <- list(temp_ref = 55,
+        z = 5.18 ,
+        p = 0.99 ,
+        delta_ref = 11.96)
+detection_mafart( pars, temperature = 57, limit=7)
 }

@@ -6,6 +6,13 @@
 \usage{
 \method{plot}{OEDisothermal}(x, y = NULL, ...)
 }
+\arguments{
+\item{x}{an object of class IsoSensitivities}
+
+\item{y}{ignored}
+
+\item{...}{ignored}
+}
 \description{
 Plot of OEDisothermal object
 }

@@ -6,6 +6,25 @@
 \usage{
 detection_peleg(pars, temperature, limit)
 }
+\arguments{
+\item{pars}{list defining the model parameters according to the rules defined in the bioinactivation package.}
+
+\item{temperature}{numerical value that describes the temperature at which the detection limit will be calculated}
+
+\item{limit}{numerical value describing the maximum number of log-reductions
+that can be identified in the experiment limit = logDL - logN0, where DL
+is the detection limit.}
+}
+\value{
+Numerical value that indicates the limit of detection for that temperature for the Peleg model
+}
 \description{
-Detection limit of the Peleg model
+Calculation of the detection limit for the Peleg model
+}
+\examples{
+ 
+pars <- list(temp_crit = 56.95,
+        k_b = 0.58 ,
+        n = 1 )
+detection_peleg( pars, temperature = 57, limit=7)
 }

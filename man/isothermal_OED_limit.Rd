@@ -43,7 +43,8 @@ pars <- list(temp_crit = 55,
 n = 1.5,
 k_b = 0.1)
 OED <- isothermal_OED_limit("Peleg", pars, limit=7,
-                            n_points=10, min_time=0, max_time=100, min_temp=52, max_temp=60, criterium="D",
+                            n_points=10, min_time=0, max_time=100,
+                             min_temp=52, max_temp=60, criterium="D",
                             opts = NULL)
 OED$optim$xbest
 

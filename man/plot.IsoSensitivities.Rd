@@ -6,6 +6,15 @@
 \usage{
 \method{plot}{IsoSensitivities}(x, y = NULL, ..., limit = NULL)
 }
+\arguments{
+\item{x}{an object of class IsoSensitivities}
+
+\item{y}{ignored}
+
+\item{...}{ignored}
+
+\item{limit}{Detection limit, NULL by default (not ploted)}
+}
 \description{
 Plotting of IsoSensitivities objects
 }
