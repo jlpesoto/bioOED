@@ -21,9 +21,12 @@
 #' pars <- list(temp_crit = 55,
 #'         n = 1.5,
 #'         k_b = 0.1)
-#' criterium_D(x = c(10,15, 20, 25), "Peleg", pars, limit=7)
+#' criterium_D_iso(x = c(10,15, 20, 25), "Peleg", pars, limit=7)
 #'
-criterium_D <- function(x, model, pars, limit){
+#'
+#' @export
+#' 
+criterium_D_iso <- function(x, model, pars, limit){
   
   half <- length(x)/2
   
@@ -35,7 +38,7 @@ criterium_D <- function(x, model, pars, limit){
   design <- data.frame(times = time_points, temperature = temp_points) %>%
     mutate(det_limit = get_detection(model, pars, .data$temperature, limit)) %>%
     mutate(times = ifelse(.data$times > .data$det_limit, .data$det_limit, .data$times)) %>%
-    select(times, temperature)
+    select("times", "temperature")
   
   -det(calculate_isothermal_FIM(model, design, pars))
 }
@@ -60,9 +63,10 @@ criterium_D <- function(x, model, pars, limit){
 #' pars <- list(temp_crit = 55,
 #'         n = 1.5,
 #'         k_b = 0.1)
-#' criterium_Emod(x = c(10,15, 20, 25), "Peleg", pars, limit=7)
+#' criterium_Emod_iso(x = c(10,15, 20, 25), "Peleg", pars, limit=7)
+#' @export
 #' 
-criterium_Emod <- function(x, model, pars, limit) {
+criterium_Emod_iso <- function(x, model, pars, limit) {
   tol_eigen <- 1e-100
   half <- length(x)/2
   
@@ -74,7 +78,7 @@ criterium_Emod <- function(x, model, pars, limit) {
   design <- data.frame(times = time_points, temperature = temp_points) %>%
     mutate(det_limit = get_detection(model, pars, .data$temperature, limit)) %>%
     mutate(times = ifelse(.data$times > .data$det_limit, .data$det_limit, .data$times)) %>%
-    select(times, temperature)
+    select("times", "temperature")
   eigenvalues <- eigen(calculate_isothermal_FIM(model, design, pars))
   if(abs(min(eigenvalues$values))-tol_eigen<0){
     return(1e6)
@@ -105,9 +109,10 @@ criterium_Emod <- function(x, model, pars, limit) {
 #' pars <- list(temp_crit = 55,
 #'         n = 1.5,
 #'         k_b = 0.1)
-#' criterium_E(x = c(10,15, 20, 25), "Peleg", pars, limit=7)
+#' criterium_E_iso(x = c(10,15, 20, 25), "Peleg", pars, limit=7)
+#' @export
 #' 
-criterium_E <- function(x, model, pars, limit) {
+criterium_E_iso <- function(x, model, pars, limit) {
   tol_det <- 1e-5
   half <- length(x)/2
   
@@ -119,7 +124,7 @@ criterium_E <- function(x, model, pars, limit) {
   design <- data.frame(times = time_points, temperature = temp_points) %>%
     mutate(det_limit = get_detection(model, pars, .data$temperature, limit)) %>%
     mutate(times = ifelse(.data$times > .data$det_limit, .data$det_limit, .data$times)) %>%
-    select(times, temperature)
+    select("times", "temperature")
   if(abs(det(calculate_isothermal_FIM(model, design, pars)))-tol_det<0) {
     return(1e100)
   }
@@ -151,9 +156,11 @@ criterium_E <- function(x, model, pars, limit) {
 #' pars <- list(temp_crit = 55,
 #'         n = 1.5,
 #'         k_b = 0.1)
-#' criterium_Amod(x = c(10,15, 20, 25), "Peleg", pars, limit=7)
+#' criterium_Amod_iso(x = c(10,15, 20, 25), "Peleg", pars, limit=7)
 #'
-criterium_Amod <- function(x, model, pars, limit) {
+#' @export
+#' 
+criterium_Amod_iso <- function(x, model, pars, limit) {
   half <- length(x)/2
   time_points <- x[1:half]
   temp_points <- x[(half+1):length(x)]
@@ -163,7 +170,7 @@ criterium_Amod <- function(x, model, pars, limit) {
   design <- data.frame(times = time_points, temperature = temp_points) %>%
     mutate(det_limit = get_detection(model, pars, .data$temperature, limit)) %>%
     mutate(times = ifelse(.data$times > .data$det_limit, .data$det_limit, .data$times)) %>%
-    select(times, temperature)
+    select("times", "temperature")
   return(-sum(diag(calculate_isothermal_FIM(model, design, pars))))
   
 }
@@ -189,9 +196,12 @@ criterium_Amod <- function(x, model, pars, limit) {
 #' pars <- list(temp_crit = 55,
 #'         n = 1.5,
 #'         k_b = 0.1)
-#' criterium_A(x = c(10,15, 20, 25), "Peleg", pars, limit=7)
+#' criterium_A_iso(x = c(10,15, 20, 25), "Peleg", pars, limit=7)
 #'
-criterium_A <- function(x, model, pars, limit) {
+#'
+#' @export
+#'
+criterium_A_iso <- function(x, model, pars, limit) {
   tol_det <- 1e-5
   half <- length(x)/2
   
@@ -203,7 +213,7 @@ criterium_A <- function(x, model, pars, limit) {
   design <- data.frame(times = time_points, temperature = temp_points) %>%
     mutate(det_limit = get_detection(model, pars, .data$temperature, limit)) %>%
     mutate(times = ifelse(.data$times > .data$det_limit, .data$det_limit, .data$times)) %>%
-    select(times, temperature)
+    select("times", "temperature")
   if(abs(det(calculate_isothermal_FIM(model, design, pars)))-tol_det<0) {
     return(1e100)
   }
@@ -241,10 +251,13 @@ criterium_A <- function(x, model, pars, limit) {
 #' n = 1.5,
 #' k_b = 0.1)
 #' OED <- isothermal_OED_limit("Peleg", pars, limit=7,
-#'                             n_points=10, min_time=0, max_time=100, min_temp=52, max_temp=60, criterium="D",
+#'                             n_points=10, min_time=0, max_time=100,
+#'                              min_temp=52, max_temp=60, criterium="D",
 #'                             opts = NULL)
 #' OED$optim$xbest
-#'
+#' 
+#'@export
+#' 
 
 isothermal_OED_limit <- function(model, pars, limit,
                                  n_points, min_time, max_time, min_temp, max_temp, criterium,
@@ -258,7 +271,7 @@ isothermal_OED_limit <- function(model, pars, limit,
     
     if(criterium=="D") {
       
-      problem <- list(f = criterium_D,
+      problem <- list(f = criterium_D_iso,
                       x_L = c(rep(min_time, n_points),rep(min_temp, n_points)),
                       x_U = c(rep(max_time, n_points),rep(max_temp, n_points))
                      
@@ -267,7 +280,7 @@ isothermal_OED_limit <- function(model, pars, limit,
     }
     if(criterium=="E_mod")
     {
-      problem <- list(f = criterium_Emod,
+      problem <- list(f = criterium_Emod_iso,
                       x_L = c(rep(min_time, n_points),rep(min_temp, n_points)),
                       x_U = c(rep(max_time, n_points),rep(max_temp, n_points))
 
@@ -276,7 +289,7 @@ isothermal_OED_limit <- function(model, pars, limit,
     }
     if(criterium=="E")
     {
-      problem <- list(f = criterium_E,
+      problem <- list(f = criterium_E_iso,
                       x_L = c(rep(min_time, n_points),rep(min_temp, n_points)),
                       x_U = c(rep(max_time, n_points),rep(max_temp, n_points))
 
@@ -285,7 +298,7 @@ isothermal_OED_limit <- function(model, pars, limit,
     }
     if(criterium=="A_mod")
     {
-      problem <- list(f = criterium_Amod,
+      problem <- list(f = criterium_Amod_iso,
                       x_L = c(rep(min_time, n_points),rep(min_temp, n_points)),
                       x_U = c(rep(max_time, n_points),rep(max_temp, n_points))
                       
@@ -294,7 +307,7 @@ isothermal_OED_limit <- function(model, pars, limit,
     }
     if(criterium=="A")
     {
-      problem <- list(f = criterium_A,
+      problem <- list(f = criterium_A_iso,
                       x_L = c(rep(min_time, n_points),rep(min_temp, n_points)),
                       x_U = c(rep(max_time, n_points),rep(max_temp, n_points))
 
@@ -321,7 +334,7 @@ isothermal_OED_limit <- function(model, pars, limit,
   my_design <- data.frame(times = time_points, temperature = temp_points) %>%
     mutate(det_limit = get_detection(model, pars, .data$temperature, limit)) %>%
     mutate(times = ifelse(.data$times > .data$det_limit, .data$det_limit, .data$times)) %>%
-    select(times, temperature)
+    select("times", "temperature")
   
   ## Return
   

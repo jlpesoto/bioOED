@@ -9,6 +9,7 @@
 #' @import tidyselect
 #' @importFrom dplyr mutate 
 #' @return Numeric value of the objective function for criterium D, which is a determinant of the FIM.
+#' @export
 #' 
 #' @examples  
 #' pars <- list(temp_crit = 55,

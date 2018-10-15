@@ -99,6 +99,7 @@ sensitivities_Mafart <- function(exp_design, pars) {
 #' 
 #' @examples 
 #' 
+#' library("tidyverse")
 #' time_profile <- seq(0, 50, length = 20)
 #' Temp_profile <- seq(52.5,60, length = 3)
 #' 
@@ -142,6 +143,7 @@ isothermal_sensitivities <- function(model, exp_design, pars) {
 #'
 #'@examples
 #'
+#' library(tidyverse)
 #' time_profile <- seq(0, 50, length = 20)
 #' Temp_profile <- seq(52.5,60, length = 3)
 #' 
@@ -157,8 +159,7 @@ isothermal_sensitivities <- function(model, exp_design, pars) {
 
 get_isothermal_correlation <- function(model, exp_design, pars) {
     
-    out <- isothermal_sensitivities(model, exp_design, pars) %>%
-        .$sensitivities %>%
+    out <- isothermal_sensitivities(model, exp_design, pars)$sensitivities %>%
         select(ends_with("_scaled")) %>%
         na.omit() %>%
         cor()
@@ -181,6 +182,7 @@ get_isothermal_correlation <- function(model, exp_design, pars) {
 #' 
 #' @examples 
 #' 
+#' library("dplyr")
 #' time_profile <- seq(0, 50, length = 20)
 #' Temp_profile <- seq(52.5,60, length = 3)
 #' 
@@ -195,9 +197,8 @@ get_isothermal_correlation <- function(model, exp_design, pars) {
 
 calculate_isothermal_FIM <- function(model, exp_design, pars) {
     
-    sens <- isothermal_sensitivities(model, exp_design, pars) %>%
-        .$sensitivities %>%
-        select(-ends_with("_scaled"), -times, -temperature) %>%
+    sens <- isothermal_sensitivities(model, exp_design, pars)$sensitivities %>%
+        select(-ends_with("_scaled"), -"times", -"temperature") %>%
         as.matrix()
     
     t(sens) %*% sens
