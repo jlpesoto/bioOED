@@ -23,9 +23,6 @@
 #'         k_b = 0.1)
 #' criterium_D_iso(x = c(10,15, 20, 25), "Peleg", pars, limit=7)
 #'
-#'
-#' @export
-#' 
 criterium_D_iso <- function(x, model, pars, limit){
   
   half <- length(x)/2
@@ -158,8 +155,6 @@ criterium_E_iso <- function(x, model, pars, limit) {
 #'         k_b = 0.1)
 #' criterium_Amod_iso(x = c(10,15, 20, 25), "Peleg", pars, limit=7)
 #'
-#' @export
-#' 
 criterium_Amod_iso <- function(x, model, pars, limit) {
   half <- length(x)/2
   time_points <- x[1:half]
@@ -197,9 +192,6 @@ criterium_Amod_iso <- function(x, model, pars, limit) {
 #'         n = 1.5,
 #'         k_b = 0.1)
 #' criterium_A_iso(x = c(10,15, 20, 25), "Peleg", pars, limit=7)
-#'
-#'
-#' @export
 #'
 criterium_A_iso <- function(x, model, pars, limit) {
   tol_det <- 1e-5
@@ -255,10 +247,7 @@ criterium_A_iso <- function(x, model, pars, limit) {
 #'                              min_temp=52, max_temp=60, criterium="D",
 #'                             opts = NULL)
 #' OED$optim$xbest
-#' 
-#'@export
-#' 
-
+#'
 isothermal_OED_limit <- function(model, pars, limit,
                                  n_points, min_time, max_time, min_temp, max_temp, criterium,
                                  opts = NULL) {
